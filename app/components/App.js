@@ -141,7 +141,7 @@ class App extends Component {
               </Link>
             </Menu.Item> */}
             <Menu.Item key="4">
-              <Link to="/connect">
+              <Link to="/">
                 <span id="item">
                   <Icon type="warning" />
                   <span>Connection Attempts</span>
@@ -165,10 +165,9 @@ class App extends Component {
               <a className={this.state.dateFilterIndex === 2 ? "true" : "false"} href="#" onClick={() => this.filterByDay()}>Day</a>
               <a className={this.state.dateFilterIndex === 3 ? "true" : "false"} href="#" onClick={() => this.filterByWeek()}>Week</a>
               <a className={this.state.dateFilterIndex === 4 ? "true" : "false"} href="#" onClick={() => this.filterByMonth()}>Month</a>*/}
-              {/* <a className={this.state.dateFilterIndex === 5 ? "true" : "false"} href="#" onClick={() => this.filterNone()}>
+              <a className={this.state.dateFilterIndex === 5 ? "true" : "false"} >
                 All Time
-              </a> */}
-              All Time
+              </a>
               <div className="main-head-nav-date">
                 <RangePicker
                   defaultValue={[

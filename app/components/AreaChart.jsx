@@ -3,23 +3,24 @@ import {Chart, Geom, Axis, Tooltip, Legend} from "bizcharts";
 import DataSet from "@antv/data-set";
 
 class AreaChart extends React.Component {
+   
     render() {
         const {data} = this.props; 
         var dv = new DataSet.View().source(data);
         dv.transform({
             type: "fold",
-            fields: ["TCP_HP", "uTP_HP"],
+            fields: ["TCP_HP", "UDP_HP","Average"],
             key: "type",
             value: "value"
         });
         const scale = {
             value: {
-                alias: "The Share Price in Dollars",
                 formatter: function (val) {
-                    return val;
+                    return val+ "%";
                 }
             },
             logCount: {
+                tickCount: 10,
                 range: [0, 1]
             }
         };

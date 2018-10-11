@@ -9,7 +9,7 @@ import { filterByConnectionResult, revalidate, filterChange } from '../redux/dis
 import TabComp from "../components/TabComp";
 import { formatAreaChart } from "../redux/utils"
 import { MOD_NAME } from "../redux/reducers/ConnectionAttempt/activity"
-
+import Popup from "../components/popup"
 class ConnectionAttempts extends Component {
   constructor(props) {
     super(props);
@@ -22,7 +22,7 @@ class ConnectionAttempts extends Component {
   //     this.props.revalidate(mods.CON_ACT_,nextProps.store.filteredConnectionResults);
   //   }
   // }
-
+  
   componentDidMount() {
     this.props.revalidate(this.props.store.filteredConnectionResults);
   }
@@ -34,7 +34,7 @@ class ConnectionAttempts extends Component {
       "mod": MOD_NAME,
       "filterAction": this.props.filterChange,
       "labels": this.props.store.filteredLogs,
-      "selectedLabel": this.props.activity.filter
+      "selectedLabel": this.props.activity.filter,
     }
 
     return (
@@ -42,7 +42,7 @@ class ConnectionAttempts extends Component {
         <span className="page-1-head">
         <Skeleton loading={!this.props.store.paging.completed} active animate>
           <h1 className="page-1-head-title">Connection Attempts
-          {/* <Icon type="info-circle" theme="outlined" style={{ fontSize: '14px', fontWeight: 'bold', color: 'rgba(0, 0, 0, 0.45)' }} /> */}
+          <Popup content={"add extra info here"}/>
           </h1>
           <div className="page-1-head-opts">
             {/* <h3 className="page-1-head-opts-title">Connection result:</h3> */}
@@ -62,10 +62,8 @@ class ConnectionAttempts extends Component {
               }}
               className="tab-1-base"
             >
-              {/* <DropDown contents={["NAT Type", "Protocol", "O.S.", "Country"]} data={this.props.store.filteredConnectionResults} mod={MOD_NAME} filterAction={this.props.filterChange}
-                labels={this.props.store.filteredLogs} selectedLabel={this.props.activity.filter} /> */}
               <Skeleton loading={!this.props.store.paging.completed} active animate>
-                <TabComp tabData={tabData}  failedCount={this.props.store.filteredLogs.failedConnections.length} chartData={formatAreaChart(this.props.activity.filteredLogs)} tableData={this.props.activity.filteredLogs} />
+                <TabComp filteredLogs={this.props.activity.filteredLogs}   tabData={tabData} failedCount={this.props.store.filteredLogs.failedConnections.length} chartData={formatAreaChart(this.props.activity.filteredLogs)} tableData={this.props.activity.filteredLogs} />
               </Skeleton>
             </Card>
           </Col>

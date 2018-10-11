@@ -78,7 +78,7 @@ export class RenderTable extends Component {
 
 export class RenderAreaChart extends Component {
   render() {
-    const { chartData } = this.props;
+    const { chartData, filteredLogs } = this.props;
     return (
         <Row gutter={24}>
           <Col className="gutter-row" span={24}>
@@ -92,14 +92,16 @@ export class RenderAreaChart extends Component {
               className="cus-card-1 chart-1 tab-1-base"
             >
              <Meta
-                title="Protocol Acceptance"
-                description="Volume / Time"
+                title="Connection Attempts"
+                description="Success Rate / Cumulative Attempts"
               />
-              {/* <div className="chart-1-meta">
-                <div className="chart-1-meta-val">{this.props.failedCount}</div>
+              <div className="chart-1-meta">
+                <div className="chart-1-meta-val">{filteredLogs.length-chartData.failed}</div>
+                <div className="chart-1-meta-desc">Successful Connections</div>
+                <div className="chart-1-meta-val">{chartData.failed}</div>
                 <div className="chart-1-meta-desc">Failed Connections</div>
-              </div> */}
-            <AreaChart data={chartData} />
+              </div>
+            <AreaChart data={chartData.data} />
             </Card>
           </Col>
         </Row>
@@ -112,23 +114,23 @@ class TabComp extends Component {
     console.log(key);
   }
 
-  TabContent(key, tabName, tabData, chartData, tableData) {
+  TabContent(key, tabName, tabData, chartData, tableData, filteredLogs) {
     return (
       <TabPane tab={tabName} key={key} className="tab-1-panel">
         <DropdownOptions contents={tabData.contents} data={tabData.data} mod={tabData.mod} filterAction={tabData.filterAction}
           labels={tabData.labels} selectedLabel={tabData.selectedLabel} />
-        <RenderAreaChart failedCount={this.props.failedCount} chartData={chartData}/>
+        <RenderAreaChart failedCount={this.props.failedCount} chartData={chartData} filteredLogs={filteredLogs}/>
         <RenderTable tableData={tableData}/>
       </TabPane>
     )
   }
 
   render() {
-    const { tabData, chartData, tableData } = this.props;
+    const { tabData, chartData, tableData, filteredLogs } = this.props;
     return (
       <div className="tab-1">
         <Tabs defaultActiveKey="1" onChange={this.callback} size="large">
-          {this.TabContent(1, "All Activity", tabData, chartData, tableData)}
+          {this.TabContent(1, "All Activity", tabData, chartData, tableData, filteredLogs)}
         </Tabs>
       </div>
     );

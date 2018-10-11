@@ -23,9 +23,11 @@ const fetchAllLogs = (dispatcher) => {
                 if (from !== jsonData.totalPages) {
                     return await fetchData(from + 1);
                 }
-                dispatcher({
-                    type: Action.PROGRESS_COMPLETED
-                });
+                setTimeout(() => {
+                    dispatcher({
+                        type: Action.PROGRESS_COMPLETED
+                    });
+                }, 500)
                 return resolve();
             } catch (err) {
                 return reject(err);

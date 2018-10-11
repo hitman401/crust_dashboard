@@ -141,23 +141,25 @@ export const applyFilter = (logs, filter) => {
 
 export const formatAreaChart = (logs) => {
     let logCount = 0
-    // let TCP_D = 0
     let TCP_HP = 0
     let uTP_HP = 0
-    const arrayList = []
-  
+    let arrayList = []
+    let failed = 0
     logs.forEach(log => {
         logCount++
-        // log.is_direct_successful? TCP_D++ : TCP_D--
-        log.tcp_hole_punch_result === 'Succeeded' ? TCP_HP++ : TCP_HP--;
-        log.utp_hole_punch_result === 'Succeeded' ? uTP_HP++ : uTP_HP--;
+        log.tcp_hole_punch_result === 'Succeeded' ? TCP_HP++ : null;
+        log.utp_hole_punch_result === 'Succeeded' ? uTP_HP++ : null;
+        log.tcp_hole_punch_result !== 'Succeeded' && log.utp_hole_punch_result !== 'Succeeded' ? failed++ : null;
+
+        let tcp_percent = Math.round((TCP_HP/logCount)*100)
+        let udp_percent = Math.round((uTP_HP/logCount)*100)
         arrayList.push({
-          "logCount": logCount,
-            //   "TCP_D": TCP_D,
-              "TCP_HP": TCP_HP,
-              "uTP_HP": uTP_HP
+          "logCount": logCount.toString(),
+              "TCP_HP": tcp_percent,
+              "UDP_HP": udp_percent,
+              "Average": (tcp_percent+udp_percent)/2
           })
       })
-      return (arrayList);
+      return ({data:arrayList,failed:failed});
   };
   

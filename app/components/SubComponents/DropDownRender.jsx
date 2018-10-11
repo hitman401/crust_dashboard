@@ -99,7 +99,6 @@ class DropDown extends Component {
     }
 
     countryMenu1() {
-        console.log(this.props)
         let countries = Object.keys(this.props.labels.countriesCount)
         let countryList = countries.map((country, k) => {
             return (

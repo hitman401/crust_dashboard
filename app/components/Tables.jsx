@@ -9,8 +9,8 @@ function filterLogs(rawData){
   {/* FIXME: Something here */}
   rawData.forEach(log => {
     dataSource.push({
-        key: log.logDataHash.substring(0, 6),
-        num: log.logDataHash.substring(0, 6),
+        key: log.logDataHash,
+        num: log.logDataHash,
         // direct: log.is_direct_successful ? "Yes" : "No",
         tcp_hp: log.tcp_hole_punch_result === "Succeeded" ? "Yes" : "Fail",
         udp_hp: log.udp_hole_punch_result === "Succeeded" ? "Yes" : "Fail",

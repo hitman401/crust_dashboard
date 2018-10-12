@@ -157,16 +157,16 @@ class App extends Component {
               />
               <div className="main-head-nav">
                 {/* maybe these className attributes could be removed
-              <a className={this.state.dateFilterIndex === 1 ? "true" : "false"} href="#" onClick={() => this.filterByHour()}>Hour</a>
-              <a className={this.state.dateFilterIndex === 2 ? "true" : "false"} href="#" onClick={() => this.filterByDay()}>Day</a>
-              <a className={this.state.dateFilterIndex === 3 ? "true" : "false"} href="#" onClick={() => this.filterByWeek()}>Week</a>
-              <a className={this.state.dateFilterIndex === 4 ? "true" : "false"} href="#" onClick={() => this.filterByMonth()}>Month</a>*/}
+              <a  href="#" onClick={() => this.filterByHour()}>Hour</a>
+              <a  href="#" onClick={() => this.filterByDay()}>Day</a>
+              <a  href="#" onClick={() => this.filterByWeek()}>Week</a>
+              <a  href="#" onClick={() => this.filterByMonth()}>Month</a>*/}
                 <a>
                 All Time
               </a>
               <div className="main-head-nav-date">
                   <RangePicker
-                    defaultValue={[
+                    value={[
                       moment(new Date(this.props.store.dateRange.allTime.from), dateFormat),
                       moment(new Date(this.props.store.dateRange.allTime.to), dateFormat)
                     ]}

@@ -6,7 +6,6 @@ import columns from '../assets/tableData/tableColumn';
 
 function filterLogs(rawData){
   const dataSource = [];
-  {/* FIXME: Something here */}
   rawData.forEach(log => {
     dataSource.push({
         key: log.logDataHash,

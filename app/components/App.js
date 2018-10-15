@@ -35,8 +35,18 @@ class App extends Component {
     });
   };
 
+  timeout() {
+    var self = this;
+    setTimeout(function () {
+          self.props.fetchLogs(1,self.props.store.logs.length);
+          self.timeout();
+    }, 2* 60* 1000);
+    }
+  
   componentDidMount() {
-    this.props.fetchLogs();
+    this.props.fetchLogs(1,100);
+    //after certain timeInterval get the next set of logs via paging 
+    this.timeout()
   }
 
   filterByHour() {
@@ -94,6 +104,7 @@ class App extends Component {
     // if (this.props.store.isFetching) {
     //   return <div>LOADING...!!!</div>
     // }
+
     return (
       <div>
         {this.props.store.error ? <Alert banner message={this.props.store.error} type="error" showIcon closable /> : null}

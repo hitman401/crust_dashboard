@@ -3,9 +3,9 @@ import { applyFilter } from '../utils';
 
 const PROGRESS_COMPLETED_TIMEOUT = 1000;
 
-const fetchAllLogs = (dispatcher) => {
+const fetchAllLogs = (dispatcher,from,limit) => {
     let result = [];
-    const fetchData = (from, limit = 200) => {
+    const fetchData = (from, limit) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const dataFetched = await fetch(`/api/stats?pageNo=${from}&size=${limit}`);
@@ -17,10 +17,10 @@ const fetchAllLogs = (dispatcher) => {
                     payload: {
                         logs: result,
                         done: donePercentage
-                    }
+                    } 
                 });
-                if (from !== jsonData.totalPages) {
-                    return await fetchData(from + 1);
+                if (from < jsonData.totalPages) {
+                    return resolve (await fetchData(from + 1,limit));
                 }
                 return resolve();
             } catch (err) {
@@ -33,7 +33,7 @@ const fetchAllLogs = (dispatcher) => {
             type: `${Action.FETCH_LOGS}_PENDING`
         });
         try {
-            await fetchData(1);
+            await fetchData(from,limit);
             const timeout = setTimeout(() => {
                 dispatcher({
                     type: Action.PROGRESS_COMPLETED
@@ -50,9 +50,9 @@ const fetchAllLogs = (dispatcher) => {
         }
     });
 }
- export const fetchLogs = () => {
+ export const fetchLogs = (from,limit) => {
     return (dispatcher) => {
-        return fetchAllLogs(dispatcher);
+        return fetchAllLogs(dispatcher,from,limit);
     }
 }
 

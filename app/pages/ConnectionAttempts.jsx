@@ -16,23 +16,21 @@ class ConnectionAttempts extends Component {
     super(props);
     // this.props.revalidate(mods.CON_ACT_,this.props.store.filteredConnectionResults);
   }
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   //initially if returns false since the state isn't changed.
-  //   //we set the initial state using constructor and this function for later changes
-  //   if (this.props.store.filteredConnectionResults != nextProps.store.filteredConnectionResults) {
-  //     this.props.revalidate(mods.CON_ACT_,nextProps.store.filteredConnectionResults);
-  //   }
-  // }
 
-  componentDidMount() {
-    this.props.revalidate(this.props.store.filteredConnectionResults, this.props.activity.filter);
-  }
+
+  // componentDidMount() {
+  //   this.props.revalidate(this.props.store.filteredConnectionResults, this.props.activity.filter);
+  // }
 
   componentWillUpdate(nextProps) {
     if (!isEquivalent(this.props.activity.filter, nextProps.activity.filter)) {
       this.props.revalidate(this.props.store.filteredConnectionResults, nextProps.activity.filter);
     }
-    // return prevState;
+
+    //Everytime the main reducer is updated we update our tab filters  
+    if (!isEquivalent(this.props.store.filteredConnectionResults, nextProps.store.filteredConnectionResults )) {
+      this.props.revalidate(nextProps.store.filteredConnectionResults, this.props.activity.filter);
+    }
   }
 
   render() {

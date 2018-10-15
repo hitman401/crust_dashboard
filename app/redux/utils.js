@@ -52,12 +52,12 @@ export const prepareLogs = (logs) => {
         if (from > new Date(log.createdAt)) {
             from = new Date(log.createdAt);
         }
-        if (typeof(log.peer_requester.nat_type) !== 'string') {
-            log.peer_requester.nat_type = 'EDM_RANDOM'
-        }
-        if (typeof(log.peer_responder.nat_type) !== 'string') {
-            log.peer_responder.nat_type = 'EDM_RANDOM'
-        }
+        // if (typeof(log.peer_requester.nat_type) !== 'string') {
+        //     log.peer_requester.nat_type = 'EDM_RANDOM'
+        // }
+        // if (typeof(log.peer_responder.nat_type) !== 'string') {
+        //     log.peer_responder.nat_type = 'EDM_RANDOM'
+        // }
         (isSuccess ? successfulConnections : failedConnections).push(log);
     });
     return {

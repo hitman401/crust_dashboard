@@ -35,8 +35,18 @@ class App extends Component {
     });
   };
 
+  timeout() {
+    var self = this;
+    setTimeout(function () {
+          self.props.fetchLogs(1,self.props.store.logs.length);
+          self.timeout();
+    }, 2* 60* 1000);
+    }
+  
   componentDidMount() {
-    this.props.fetchLogs();
+    this.props.fetchLogs(1,100);
+    //after certain timeInterval get the next set of logs via paging 
+    this.timeout()
   }
 
   filterByHour() {
@@ -94,6 +104,7 @@ class App extends Component {
     // if (this.props.store.isFetching) {
     //   return <div>LOADING...!!!</div>
     // }
+
     return (
       <div className="root-b">
         {this.props.store.error ? <Alert banner message={this.props.store.error} type="error" showIcon closable /> : null}
@@ -163,16 +174,16 @@ class App extends Component {
               />
               <div className="main-head-nav">
                 {/* maybe these className attributes could be removed
-              <a className={this.state.dateFilterIndex === 1 ? "true" : "false"} href="#" onClick={() => this.filterByHour()}>Hour</a>
-              <a className={this.state.dateFilterIndex === 2 ? "true" : "false"} href="#" onClick={() => this.filterByDay()}>Day</a>
-              <a className={this.state.dateFilterIndex === 3 ? "true" : "false"} href="#" onClick={() => this.filterByWeek()}>Week</a>
-              <a className={this.state.dateFilterIndex === 4 ? "true" : "false"} href="#" onClick={() => this.filterByMonth()}>Month</a>*/}
+              <a  href="#" onClick={() => this.filterByHour()}>Hour</a>
+              <a  href="#" onClick={() => this.filterByDay()}>Day</a>
+              <a  href="#" onClick={() => this.filterByWeek()}>Week</a>
+              <a  href="#" onClick={() => this.filterByMonth()}>Month</a>*/}
                 <a>
                 All Time
               </a>
               <div className="main-head-nav-date">
                   <RangePicker
-                    defaultValue={[
+                    value={[
                       moment(new Date(this.props.store.dateRange.allTime.from), dateFormat),
                       moment(new Date(this.props.store.dateRange.allTime.to), dateFormat)
                     ]}

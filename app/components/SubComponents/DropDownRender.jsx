@@ -35,26 +35,7 @@ class DropDown extends Component {
             </Menu>
         )
     }
-
-    // anyCountry1() {
-    //     return (
-    //         <Menu>
-    //             <Menu.Item key={`menu-country1-${0}`}>
-    //                 <a onClick={() => this.props.filterAction(this.props.data, this.props.mod, Action.FILTER_COUNTRY_TYPE1, OS.ANY)}>{OS.ANY}</a>
-    //             </Menu.Item>
-    //         </Menu>
-    //     )
-    // }
-    // anyCountry2() {
-    //     return (
-    //         <Menu>
-    //             <Menu.Item key={`menu-country2-${0}`}>
-    //                 <a onClick={() => this.props.filterAction(this.props.data, this.props.mod, Action.FILTER_COUNTRY_TYPE2, OS.ANY)}>{OS.ANY}</a>
-    //             </Menu.Item>
-    //         </Menu>
-    //     )
-    // }
-
+    
     natMenu1() {
         let items = this.props.labels.natTypes
         let itemList = items.map((nat, k) => {

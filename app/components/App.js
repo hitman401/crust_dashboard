@@ -38,15 +38,20 @@ class App extends Component {
   componentDidMount() {
     this.props.fetchLogs(1, 400);
   }
-
+  
   fetchNewLogs() {
     var self = this;
     const timeoutId = setTimeout(function () {
-      self.props.fetchLogs(2, self.props.store.logs.length);
+      if (self.props.store.logs.length !== 0) {
+        self.props.fetchLogs(2, self.props.store.logs.length);
+      }
+      else {
+        self.props.fetchLogs(1, 400);
+      }
       clearTimeout(timeoutId);
     }, 2 * 60 * 1000);
   }
-
+    
   componentWillUpdate(nextProps) {
     if (!nextProps.store.isFetching && this.props.store.isFetching) {
       this.fetchNewLogs()

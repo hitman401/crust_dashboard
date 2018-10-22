@@ -16,7 +16,7 @@ export const prepareLogs = (logs) => {
             case 'macos':
                 return OS.OSX;
             case 'windows':
-                return OS.Windows;  
+                return OS.Windows;
             default:
                 return osName;
         }
@@ -40,7 +40,7 @@ export const prepareLogs = (logs) => {
             osCountMap[log.peer_responder.os] = 0;
         }
         osCountMap[log.peer_requester.os] = osCountMap[log.peer_requester.os] + 1;
-        osCountMap[log.peer_responder.os] = osCountMap[log.peer_responder.os] + 1; 
+        osCountMap[log.peer_responder.os] = osCountMap[log.peer_responder.os] + 1;
         if (!countryCountMap[log.peer_requester.geo_info.country_name]) {
             countryCountMap[log.peer_requester.geo_info.country_name] = 0;
         }
@@ -85,11 +85,11 @@ export const filterLogs = (logs, from, to) => {
 export const applyFilter = (logs, filter) => {
     const isNatTypeMatching = (log) => {
         let matches = false;
-        if (filter.NatType1 === NatType.ANY && filter.NatType2 === NatType.ANY){
+        if (filter.NatType1 === NatType.ANY && filter.NatType2 === NatType.ANY) {
             matches = true;
-        } else if ((filter.NatType1 === NatType.ANY && filter.NatType2 !== NatType.ANY) ){
+        } else if ((filter.NatType1 === NatType.ANY && filter.NatType2 !== NatType.ANY)) {
             matches = (filter.NatType2 === log.peer_requester.nat_type || filter.NatType2 === log.peer_responder.nat_type)
-        } else if (filter.NatType2 === NatType.ANY && filter.NatType1 !== NatType.ANY){
+        } else if (filter.NatType2 === NatType.ANY && filter.NatType1 !== NatType.ANY) {
             matches = (filter.NatType1 === log.peer_requester.nat_type || filter.NatType1 === log.peer_responder.nat_type)
         } else if (filter.NatType1 !== NatType.ANY && filter.NatType2 !== NatType.ANY) {
             matches = (log.peer_requester.nat_type === filter.NatType1 && log.peer_responder.nat_type === filter.NatType2) ||
@@ -97,7 +97,7 @@ export const applyFilter = (logs, filter) => {
         }
         return matches;
     }
-    
+
     const isOSMatching = (log) => {
         let matches = false;
         if (filter.OSType1 === OS.ANY && filter.OSType2 === OS.ANY)
@@ -106,7 +106,7 @@ export const applyFilter = (logs, filter) => {
             matches = (filter.OSType2 === log.peer_requester.os || filter.OSType2 === log.peer_responder.os)
         else if ((filter.OSType2 === OS.ANY && filter.OSType1 !== OS.ANY))
             matches = (filter.OSType1 === log.peer_requester.os || filter.OSType1 === log.peer_responder.os)
-        else if (filter.OSType1 !== OS.ANY && filter.OSType2 !== OS.ANY) 
+        else if (filter.OSType1 !== OS.ANY && filter.OSType2 !== OS.ANY)
             matches = (log.peer_requester.os === filter.OSType1 && log.peer_responder.os === filter.OSType2) ||
                 (log.peer_requester.os === filter.OSType2 && log.peer_responder.os === filter.OSType1)
         return matches;
@@ -133,7 +133,7 @@ export const applyFilter = (logs, filter) => {
             return (log.peer_requester.geo_info.country_name === filter.CountryType1 && log.peer_responder.geo_info.country_name === filter.CountryType2) ||
                 (log.peer_requester.geo_info.country_name === filter.CountryType2 && log.peer_responder.geo_info.country_name === filter.CountryType1)
     }
-    
+
     return logs.filter(log => {
         return isNatTypeMatching(log) && isOSMatching(log) && isProtocolMatching(log) && isCountryMatching(log);
     });
@@ -144,32 +144,36 @@ export const formatAreaChart = (logs) => {
     let TCP_HP = 0
     let uDP_HP = 0
     let failed = 0
+    let Logs_Limit = 100
     let arrayList = [{
         "logCount": "0",
         "TCP Holepunch": 0,
         "UDP Holepunch": 0,
-        "Average": 0  
-    }] 
-    logs.forEach(log => { 
+        "Average": 0
+    }]
+    let log_split = logs.length > 100 ? Math.round(logs.length / Logs_Limit) : 1
+    logs.forEach(log => {
         logCount++
         log.tcp_hole_punch_result === 'Succeeded' ? TCP_HP++ : null;
         log.udp_hole_punch_result === 'Succeeded' ? uDP_HP++ : null;
-
         log.tcp_hole_punch_result !== 'Succeeded' && log.udp_hole_punch_result !== 'Succeeded' ? failed++ : null;
 
-        let tcp_percent = Math.round((TCP_HP/logCount)*100)
-        let udp_percent = Math.round((uDP_HP/logCount)*100)
-        arrayList.push({
-          "logCount": logCount.toString(),
-              "TCP Holepunch": tcp_percent,
-              "UDP Holepunch": udp_percent,
-              "Average": (tcp_percent+udp_percent)/2
-          })
-      })
-      return ({data:arrayList,failed:failed});
-  };
+        let tcp_percent = Math.round((TCP_HP / logCount) * 100)
+        let udp_percent = Math.round((uDP_HP / logCount) * 100)
 
-  export const isEquivalent = (a, b) => {
+        if (logCount % log_split == 0) {
+            arrayList.push({
+                "logCount": logCount.toString(),
+                "TCP Holepunch": tcp_percent,
+                "UDP Holepunch": udp_percent,
+                "Average": (tcp_percent + udp_percent) / 2
+            })
+        }
+    })
+    return ({ data: arrayList, failed: failed });
+};
+
+export const isEquivalent = (a, b) => {
     // Create arrays of property names
     var aProps = Object.getOwnPropertyNames(a);
     var bProps = Object.getOwnPropertyNames(b);

@@ -18,7 +18,7 @@ export default class PieCharts extends Component {
     let percentage = ((e.data._origin.value/num) * 100).toFixed(0);
     this.setState({type: e.data._origin.type, percent: percentage})
   }
-
+  
   render() {
     return (
       <Chart
@@ -29,7 +29,7 @@ export default class PieCharts extends Component {
         onPlotClick={this.percent}
         forceFit
       >
-        <Coord type="theta" radius={0.75} innerRadius={0.6} />
+        <Coord type="theta" radius={0.7} innerRadius={0.8} />
         <Legend
         
           position="right"
@@ -39,7 +39,7 @@ export default class PieCharts extends Component {
         <Guide>
           <Html
             position={["50%", "50%"]}
-            html={`<div style="color:#8c8c8c;font-size:1.16em;text-align: center;width: 10em;">${this.state.type}<br><span style="color:#262626;font-size:2.5em">${this.state.percent}</span>%</div>`}
+            html={`<div style="color:#8c8c8c;font-size:1.16em;text-align: center;width: 10em;">${this.state.type}<br><span style="color:#262626;font-size:2.5em">${this.props.percent}</span>%</div>`}
             alignX="middle"
             alignY="middle"
           />

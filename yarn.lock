@@ -4071,6 +4071,11 @@ import-lazy@^2.1.0:
   resolved "https://registry.yarnpkg.com/import-lazy/-/import-lazy-2.1.0.tgz#05698e3d45c88e8d7e9d92cb0584e77f096f3e43"
   integrity sha1-BWmOPUXIjo1+nZLLBYTnfwlvPkM=
 
+import-scripts@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/import-scripts/-/import-scripts-1.0.0.tgz#35c2e0e31961252696d258cbef0bfb34591cb784"
+  integrity sha1-NcLg4xlhJSaW0ljL7wv7NFkct4Q=
+
 imurmurhash@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/imurmurhash/-/imurmurhash-0.1.4.tgz#9218b9b2b928a238b13dc4fb6b6d576f231453ea"
@@ -6328,6 +6333,11 @@ process@^0.11.10:
   version "0.11.10"
   resolved "https://registry.yarnpkg.com/process/-/process-0.11.10.tgz#7332300e840161bda3e69a1d1d91a7d4bc16f182"
   integrity sha1-czIwDoQBYb2j5podHZGn1LwW8YI=
+
+promise-worker@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/promise-worker/-/promise-worker-2.0.0.tgz#fa3cc934527fa91dd58c022a84a114ae504caedc"
+  integrity sha512-FJwaKgVJbUWkui97I1oWG9YA4YzS5dRAmC+gG/RMHSgUKBcL0pnwTm8/Muz2QF3kk2ovboEDmrz6BtyFPnIbfg==
 
 promise@^7.1.1:
   version "7.3.1"

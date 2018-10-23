@@ -111,7 +111,9 @@ export class RenderAreaChart extends Component {
                     </div>
                   )
               }
-              <div className="chat-2"><AreaChart data={chartData.data} /></div>
+              <div className="chat-2">
+                <AreaChart data={chartData.data} />
+              </div>
             </Skeleton>
           </Card>
         </Col>
@@ -125,11 +127,12 @@ class TabComp extends Component {
   }
 
   TabContent(key, tabName, tabData, chartData, tableData, filteredLogs, loading) {
+    console.log('Render Chart', chartData);
     return (
       <TabPane tab={tabName} key={key} className="tab-1-panel">
         <DropdownOptions contents={tabData.contents} data={tabData.data} mod={tabData.mod} filterAction={tabData.filterAction}
           labels={tabData.labels} selectedLabel={tabData.selectedLabel} />
-        <RenderAreaChart showFailedCount={this.props.showFailedCount} chartData={chartData} filteredLogs={filteredLogs} loading={loading}/>
+        {/* <RenderAreaChart showFailedCount={this.props.showFailedCount} chartData={chartData} filteredLogs={filteredLogs} loading={loading}/> */}
         <RenderTable tableData={tableData} loading={loading} tabData={tabData}/>
       </TabPane>
     )

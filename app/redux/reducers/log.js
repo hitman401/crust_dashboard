@@ -93,8 +93,7 @@ const logReducer = (state = initialState, action) => {
             };
             break;
         case `${Action.FETCH_LOGS}_FULFILLED`:
-            const hasFailed = action.payload instanceof Error;
-            if (hasFailed) {
+            if (action.payload instanceof Error) {
                 state = {
                     ...state,
                     isFetching: false,
@@ -102,27 +101,27 @@ const logReducer = (state = initialState, action) => {
                 };
             } else {
                 const logs = action.payload.logs;
-                const preparedLogs = prepareLogs(logs);
+                // const preparedLogs = prepareLogs(logs);
                 const filteredLogs = {
-                    logs: preparedLogs.logs,
-                    successfulConnections: preparedLogs.successfulConnections,
-                    failedConnections: preparedLogs.failedConnections,
+                    logs: logs.logs,
+                    successfulConnections: logs.successfulConnections,
+                    failedConnections: logs.failedConnections,
                     osList: Object.values(OS),
                     natTypes: Object.values(NatType),
-                    osCount: preparedLogs.osCountMap,
-                    countriesCount: preparedLogs.countryCountMap
+                    osCount: logs.osCountMap,
+                    countriesCount: logs.countryCountMap
                 };
                 state = {
                     ...initialState,
                     isReady: true,
                     isFetching: false,
                     error: undefined,
-                    logs: logs,
+                    logs: logs.logs,
                     filteredLogs,
                     filteredConnectionResults: filteredLogs.logs,
                     dateRange: {
-                        allTime: preparedLogs.dateRange,
-                        custom: preparedLogs.dateRange
+                        allTime: logs.dateRange,
+                        custom: logs.dateRange
                     },
                     paging: {
                         done: action.payload.done,

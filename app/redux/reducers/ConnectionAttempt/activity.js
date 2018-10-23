@@ -6,6 +6,7 @@ export const MOD_NAME = 'CON_ACT';
 
 const initialState = {
     filteredLogs: [],
+    chartData: {data: [], failed: 0},
     isComputing: false,
     filter: { ...Filter }
 };
@@ -21,17 +22,14 @@ const activityReducer = (state=initialState, action) => {
         // };
         // break;
         case `${Action.REVALIDATE}_PENDING`:
-            state = {
-                ...state,
-                isComputing: true,
-                filteredLogs: []
-            };
+            state = {...state, initialState};
             break;
         case `${Action.REVALIDATE}_FULFILLED`:
             state = {
                 ...state,
                 isComputing: false,
-                filteredLogs: action.payload
+                filteredLogs: action.payload.filteredLogs,
+                chartData: action.payload.chartData
             };
             break;
 

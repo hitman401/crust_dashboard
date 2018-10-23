@@ -39,7 +39,7 @@ class ConnectionAttempts extends Component {
       "filterAction": this.props.filterChange,
       "labels": this.props.store.filteredLogs,
       "selectedLabel": this.props.activity.filter
-    }
+    };
 
     return (
       <div className="page-1">
@@ -70,7 +70,7 @@ class ConnectionAttempts extends Component {
             >
               {/* <DropDown contents={["NAT Type", "Protocol", "O.S.", "Country"]} data={this.props.store.filteredConnectionResults} mod={MOD_NAME} filterAction={this.props.filterChange}
                 labels={this.props.store.filteredLogs} selectedLabel={this.props.activity.filter} /> */}
-                <TabComp loading={!this.props.store.paging.completed} showFailedCount={this.props.activity.filter.Protocol === PROTOCOL.ANY} filteredLogs={this.props.activity.filteredLogs} tabData={tabData} chartData={formatAreaChart(this.props.activity.filteredLogs)} tableData={this.props.activity.filteredLogs} />
+              <TabComp loading={!this.props.store.paging.completed} showFailedCount={this.props.activity.filter.Protocol === PROTOCOL.ANY} filteredLogs={this.props.activity.filteredLogs} tabData={tabData} chartData={this.props.activity.chartData} tableData={this.props.activity.filteredLogs} />
             </Card>
           </Col>
         </Row>

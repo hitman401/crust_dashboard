@@ -8,6 +8,8 @@ import connectionAttemptActivity from './reducers/ConnectionAttempt/activity';
 // import connectionAttemptCountry from './reducers/ConnectionAttempt/country';
 // import connectionAttemptOS from './reducers/ConnectionAttempt/os';
 
+import DataSet from "@antv/data-set";
+
 const store = createStore(combineReducers({
     logReducer,
     connectionAttemptActivity,
@@ -16,5 +18,5 @@ const store = createStore(combineReducers({
 }), applyMiddleware(logger, thunk, promiseMiddleware()));
 
 window.store = store;
-
+window.DataSet = DataSet;
 export default store;

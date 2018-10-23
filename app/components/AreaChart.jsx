@@ -1,17 +1,17 @@
 import React from "react";
 import {Chart, Geom, Axis, Tooltip, Legend} from "bizcharts";
-import DataSet from "@antv/data-set";
+// import DataSet from "@antv/data-set";
 
 class AreaChart extends React.Component {
     render() {
         const {data} = this.props;
-        var dv = new DataSet.View().source(data);
-        dv.transform({
-            type: "fold",
-            fields: ["TCP Holepunch", "UDP Holepunch","Average"],
-            key: "type",
-            value: "value"
-        });
+        // var dv = new DataSet.View().source(data);
+        // dv.transform({
+        //     type: "fold",
+        //     fields: ["TCP Holepunch", "UDP Holepunch","Average"],
+        //     key: "type",
+        //     value: "value"
+        // });
         const scale = {
             value: {
                 alias: "The Share Price in Dollars",
@@ -26,7 +26,7 @@ class AreaChart extends React.Component {
             <div>
                 <Chart
                     height={500}
-                    data={dv}
+                    data={data}
                     padding={"auto"}
                     scale={scale}
                     forceFit

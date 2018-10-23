@@ -49,7 +49,7 @@ class App extends Component {
         self.props.fetchLogs(1, 400);
       }
       clearTimeout(timeoutId);
-    }, 2 * 60 * 1000);
+    }, 5 * 60 * 1000);
   }
     
   componentWillUpdate(nextProps) {

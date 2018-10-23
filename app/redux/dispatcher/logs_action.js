@@ -1,24 +1,31 @@
 import Action from '../ActionType';
-import { applyFilter } from '../utils';
+import PromiseWorker from 'promise-worker';
+const worker = new Worker('./../worker.js');
+const promiseWorker = new PromiseWorker(worker);
 
 const PROGRESS_COMPLETED_TIMEOUT = 1000;
 
 const fetchAllLogs = (dispatcher, from, limit, oldLogs) => {
     let result = [];
-    const fetchData = (from, limit, oldLogs) => {
+    const fetchData = (from, limit) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const dataFetched = await fetch(`/api/stats?pageNo=${from}&size=${limit}`);
+                const dataFetched = await fetch(`http://localhost:8080/api/stats?pageNo=${from}&size=${limit}`);
                 const jsonData = await dataFetched.json();
                 result = result.concat(jsonData.logs);
                 const donePercentage = Math.ceil(from / (jsonData.totalPages) * 100)
                 if (from < jsonData.totalPages) {
-                    return resolve(await fetchData(from + 1, limit, oldLogs));
+                    return resolve(await fetchData(from + 1, limit));
                 }
+                result = oldLogs.concat(result);
+                for (var i=0;i<5;i++) {
+                    result = result.concat(result);
+                }
+                const logs = await promiseWorker.postMessage({type: 'PREPARE_LOGS', payload: result});
                 dispatcher({
                     type: `${Action.FETCH_LOGS}_FULFILLED`,
                     payload: {
-                        logs: oldLogs.concat(result),
+                        logs,
                         done: donePercentage
                     }
                 });
@@ -50,10 +57,9 @@ const fetchAllLogs = (dispatcher, from, limit, oldLogs) => {
         }
     });
 }
+
  export const fetchLogs = (from, limit) => {
-    return (dispatcher,getState) => {
-        return fetchAllLogs(dispatcher, from, limit, getState().logReducer.logs);
-    }
+    return (dispatcher,getState) => fetchAllLogs(dispatcher, from, limit, getState().logReducer.logs);
 }
 
 export const filterByConnectionResult = (action) => {
@@ -65,8 +71,9 @@ export const filterByConnectionResult = (action) => {
 export const revalidate = (logs, filter) => {
     return {
         type: Action.REVALIDATE,
-        payload: new Promise((resolve) => {
-            resolve(applyFilter(logs, filter))
+        payload: promiseWorker.postMessage({
+            type: 'APPLY_FILTER',
+            payload: {logs: logs, filter}
         })
     }
 }

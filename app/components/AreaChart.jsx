@@ -1,7 +1,6 @@
 import React from "react";
-import {track, Chart, Geom, Axis, Tooltip, Legend} from "bizcharts";
+import {Chart, Geom, Axis, Tooltip, Legend} from "bizcharts";
 import DataSet from "@antv/data-set";
-track(false);
 
 class AreaChart extends React.Component {
     render() {

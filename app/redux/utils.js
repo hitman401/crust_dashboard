@@ -9,9 +9,6 @@ export const prepareLogs = (logs) => {
     const peerIdMap = [];
     const successfulConnections = [];
     const failedConnections = [];
-    let tcpHpCount=0;
-    let udpHpCount=0;
-    let directCount=0;
     let from = new Date;
     const tranformOSName = (osName) => {
         switch (osName.toLowerCase()) {
@@ -28,9 +25,6 @@ export const prepareLogs = (logs) => {
 
     logs.forEach((log, i) => {
         log.index = i;
-        log.tcp_hole_punch_result === 'Succeeded' ? tcpHpCount++ : null;
-        log.udp_hole_punch_result === 'Succeeded' ? udpHpCount++ : null;
-        log.is_direct_successful === 'Succeeded' ? directCount++ : null;
 
         if (!log.hasOwnProperty('udp_hole_punch_result')) {
             log.udp_hole_punch_result = 'Failed';
@@ -75,9 +69,6 @@ export const prepareLogs = (logs) => {
     });
     return {
         logs,
-        tcpHpCount,
-        udpHpCount,
-        directCount,
         osCountMap,
         countryCountMap,
         peerIdMap,
@@ -196,34 +187,30 @@ export const generatePeerPublicInfo = (name, id) => {
 
 export const formatAreaChart = (logs) => {
     let logCount = 0
-    let tcpHpCount = 0
-    let udpHpCount = 0
+    let TCP_HP = 0
+    let uDP_HP = 0
     let failed = 0
-    let logsLimit = 100
     let arrayList = [{
         "logCount": "0",
         "TCP Holepunch": 0,
         "UDP Holepunch": 0,
         "Average": 0
     }]
-    let logSplitInterval = logs.length > 100 ? Math.round(logs.length / logsLimit) : 1
     logs.forEach(log => {
         logCount++
-        log.tcp_hole_punch_result === 'Succeeded' ? tcpHpCount++ : null;
-        log.udp_hole_punch_result === 'Succeeded' ? udpHpCount++ : null;
+        log.tcp_hole_punch_result === 'Succeeded' ? TCP_HP++ : null;
+        log.udp_hole_punch_result === 'Succeeded' ? uDP_HP++ : null;
+
         log.tcp_hole_punch_result !== 'Succeeded' && log.udp_hole_punch_result !== 'Succeeded' ? failed++ : null;
 
-        const tcpPercent = Math.round((tcpHpCount / logCount) * 100)
-        const udpPercent = Math.round((udpHpCount / logCount) * 100)
-
-        if (logCount % logSplitInterval == 0) {
-            arrayList.push({
-                "logCount": logCount.toString(),
-                "TCP Holepunch": tcpPercent,
-                "UDP Holepunch": udpPercent,
-                "Average": (tcpPercent + udpPercent) / 2
-            })
-        }
+        let tcp_percent = Math.round((TCP_HP / logCount) * 100)
+        let udp_percent = Math.round((uDP_HP / logCount) * 100)
+        arrayList.push({
+            "logCount": logCount.toString(),
+            "TCP Holepunch": tcp_percent,
+            "UDP Holepunch": udp_percent,
+            "Average": (tcp_percent + udp_percent) / 2
+        })
     })
     return ({ data: arrayList, failed: failed });
 };

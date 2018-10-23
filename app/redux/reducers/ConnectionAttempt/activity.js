@@ -1,17 +1,12 @@
 import Action from '../../ActionType';
 import { Filter } from '../../FilterTypes';
-import { applyFilter, prepareLogs } from '../../utils';
+import { applyFilter } from '../../utils';
 
 export const MOD_NAME = 'CON_ACT';
 
 const initialState = {
     filteredLogs: [],
     isComputing: false,
-    failedConnections: [],
-    successfulConnections: [],
-    tcpHpCount: 0,
-    udpHpCount: 0,
-    directCount: 0,
     filter: { ...Filter }
 };
 
@@ -33,16 +28,10 @@ const activityReducer = (state = initialState, action) => {
             };
             break;
         case `${Action.REVALIDATE}_FULFILLED`:
-        const preparedLogs = prepareLogs(action.payload);
             state = {
                 ...state,
                 isComputing: false,
-                filteredLogs: preparedLogs.logs ,
-                failedConnections: preparedLogs.failedConnections,
-                successfulConnections: preparedLogs.successfulConnections,
-                tcpHpCount: preparedLogs.tcpHpCount,
-                udpHpCount: preparedLogs.udpHpCount,
-                directCount: preparedLogs.directCount            
+                filteredLogs: action.payload
             };
             break;
 

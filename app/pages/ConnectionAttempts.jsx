@@ -40,15 +40,7 @@ class ConnectionAttempts extends Component {
       "labels": this.props.store.filteredLogs,
       "selectedLabel": this.props.activity.filter
     }
-    const pieChartData = {
-      "success": this.props.activity.successfulConnections.length,
-      "failed": this.props.activity.failedConnections.length,
-    }
-    const barChartData={
-      "tcp" : this.props.activity.tcpHpCount,
-      "udp" : this.props.activity.udpHpCount,
-      "direct" : this.props.activity.directCount
-    }
+
     return (
       <div className="page-1">
         <span className="page-1-head">
@@ -78,7 +70,7 @@ class ConnectionAttempts extends Component {
             >
               {/* <DropDown contents={["NAT Type", "Protocol", "O.S.", "Country"]} data={this.props.store.filteredConnectionResults} mod={MOD_NAME} filterAction={this.props.filterChange}
                 labels={this.props.store.filteredLogs} selectedLabel={this.props.activity.filter} /> */}
-                <TabComp loading={!this.props.store.paging.completed} showFailedCount={this.props.activity.filter.Protocol === PROTOCOL.ANY} filteredLogs={this.props.activity.filteredLogs} tabData={tabData} pieChartData={pieChartData} barChartData={barChartData} tableData={this.props.activity.filteredLogs} />
+                <TabComp loading={!this.props.store.paging.completed} showFailedCount={this.props.activity.filter.Protocol === PROTOCOL.ANY} filteredLogs={this.props.activity.filteredLogs} tabData={tabData} chartData={formatAreaChart(this.props.activity.filteredLogs)} tableData={this.props.activity.filteredLogs} />
             </Card>
           </Col>
         </Row>

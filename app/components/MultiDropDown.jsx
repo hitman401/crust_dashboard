@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Select, Row, Col, Spin } from "antd";
-// import debounce from 'lodash/debounce';
 import PromiseWorker from 'promise-worker';
 
 const worker = new Worker('../redux/dispatcher/worker.js');
@@ -20,7 +19,7 @@ class MultiDropDown extends Component {
 
     componentWillUpdate(nextProps, nextState) {
         if (nextState.fetching) {
-           promiseWorker.postMessage({
+            promiseWorker.postMessage({
                 type: 'FILTER_NAME',
                 payload: {
                     data: this.props.items,
@@ -28,7 +27,7 @@ class MultiDropDown extends Component {
                 }
             }).then((res) => {
                 this.setState({
-                    data: res.slice(1,100),
+                    data: res.slice(0, 100),
                     fetching: false
                 });
             })
@@ -47,7 +46,7 @@ class MultiDropDown extends Component {
             value: value
         });
     }
-    
+
     clear = () => {
         this.setState({
             data: [],

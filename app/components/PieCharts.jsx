@@ -28,7 +28,7 @@ export default class PieCharts extends Component {
           height={350}
           padding="auto"
           data={this.props.data}
-          //onPlotClick={this.percent}
+          forceFit
         >
           <Coord type="theta" radius={0.7} innerRadius={0.8} />
           <Legend

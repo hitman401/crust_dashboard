@@ -60,6 +60,7 @@ class Tables extends Component {
           columns={columns}
           rowClassName={(record) => record.color}
           pagination={{ onChange: this.pageChange.bind(this), current: this.state.page, hideOnSinglePage: true }}
+          scroll={{x: 1024}}
         />
       </div>
     );

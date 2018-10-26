@@ -74,7 +74,7 @@ export class RenderPieChart extends Component {
           style={{
             background: "#fff",
             borderRadius: 3,
-            minHeight: 500
+            minHeight: 550
           }}
           title="Connections"
         >
@@ -227,10 +227,10 @@ class TabComp extends Component {
         {/* <RenderAreaChart showFailedCount={this.props.showFailedCount} chartData={chartData} filteredLogs={filteredLogs} loading={loading}/> */}
         <RenderMultiDropDown data={tabData.labels.peerIds} mod={tabData.mod} filterAction={tabData.filterAction} />
         <Row gutter={24} className="chart-wrapper">
-          <Col className="gutter-row" span={12}>
+          <Col className="chart-wrapper-sec gutter-row" xs={24} xl={12}>
             <RenderPieChart data={pieChartData} loading={loading} protocolFilter={tabData.selectedLabel.protocolFilter} />
           </Col>
-          <Col className="gutter-row" span={12}>
+          <Col className="chart-wrapper-sec gutter-row" xs={24} xl={12}>
             <RenderBarChart data={barChartData} loading={loading} protocolFilter={tabData.selectedLabel.protocolFilter} />
           </Col>
         </Row>

@@ -28,7 +28,7 @@ class MultiDropDown extends Component {
                 }
             }).then((res) => {
                 this.setState({
-                    data: res,
+                    data: res.slice(1,100),
                     fetching: false
                 });
             })
@@ -37,7 +37,7 @@ class MultiDropDown extends Component {
 
     fetchUser = (value) => {
         value = value.trim();
-        if (value.length > 2) {
+        if (value.length > 0) {
             this.setState({
                 fetching: true,
             });

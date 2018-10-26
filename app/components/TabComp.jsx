@@ -78,7 +78,7 @@ export class RenderPieChart extends Component {
           }}
           title="Connections"
         >
-          <Skeleton loading={loading} paragraph={{ rows: 15 }} active animate>
+          <Skeleton loading={loading || data.loading} paragraph={{ rows: 15 }} active animate>
             <div className="chart-1-meta">
               <div className="chart-1-meta-val">{total}</div>
               <div className="chart-1-meta-desc">Total Connection Attempts</div>

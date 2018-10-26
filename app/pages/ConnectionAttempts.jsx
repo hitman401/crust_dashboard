@@ -16,9 +16,9 @@ class ConnectionAttempts extends Component {
     super(props);
   }
 
-  componentDidMount() {
-    this.props.revalidate(this.props.store.filteredConnectionResults, this.props.activity.filter);
-  }
+  // componentDidMount() {
+  //   this.props.revalidate(this.props.store.filteredConnectionResults, this.props.activity.filter);
+  // }
 
   componentWillUpdate(nextProps) {
     const hasFilterChanged = !isEquivalent(this.props.activity.filter, nextProps.activity.filter, ['Protocol']);
@@ -42,6 +42,7 @@ class ConnectionAttempts extends Component {
       selectedLabel: this.props.activity.filter
     };
     const pieChartData = { 
+      loading: this.props.activity.pieChart.isComputing, 
       total: this.props.activity.pieChart.total,
       success: this.props.activity.pieChart.success 
     };
@@ -80,7 +81,7 @@ class ConnectionAttempts extends Component {
             >
               {/* <DropDown contents={["NAT Type", "Protocol", "O.S.", "Country"]} data={this.props.store.filteredConnectionResults} mod={MOD_NAME} filterAction={this.props.filterChange}
                 labels={this.props.store.filteredLogs} selectedLabel={this.props.activity.filter} /> */}
-                <TabComp loading={!this.props.store.paging.completed || this.props.activity.isComputing} 
+                <TabComp loading={this.props.store.isFetching || this.props.activity.isComputing} 
                   showFailedCount={this.props.activity.filter.Protocol === PROTOCOL.ANY} 
                   filteredLogs={this.props.activity.filteredLogs} tabData={tabData} 
                   pieChartData={pieChartData}  barChartData={barChartData} 

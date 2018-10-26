@@ -54,7 +54,7 @@ const logReducer = (state = initialState, action) => {
             state = {
                 ...state,
                 paging: {
-                    done: state.paging.done,
+                    done: action.payload.done,
                     completed: false
                 }
             };

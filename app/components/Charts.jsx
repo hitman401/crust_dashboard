@@ -4,7 +4,7 @@ import { Row, Col } from "antd";
 
 class Charts extends Component {
   render() {
-    const { dataSource, maxInterval } = this.props;
+    const { dataSource, maxRange } = this.props;
     const x = "connectionType";
     const y = "Success"
     const position = x + "*" + y

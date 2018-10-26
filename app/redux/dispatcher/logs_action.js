@@ -41,12 +41,12 @@ const fetchAllLogs = (dispatcher, from, limit, oldLogs=[]) => {
     return new Promise(async (resolve, reject) => {
         try {
             const logs = await fetchData(from, limit, oldLogs);
-            const timeout = setTimeout(() => {
+            // const timeout = setTimeout(() => {
                 dispatcher({
                     type: Action.PROGRESS_COMPLETED
                 });
-                clearTimeout(timeout);
-            }, PROGRESS_COMPLETED_TIMEOUT);
+                // clearTimeout(timeout);
+            // }, PROGRESS_COMPLETED_TIMEOUT);
             return resolve({logs});
         } catch (e) {
             dispatcher({

@@ -8,6 +8,17 @@ import { PROTOCOL } from '../redux/FilterTypes';
 import { MOD_NAME } from '../redux/reducers/ConnectionAttempt/activity';
 import {filterPieChart} from '../redux/dispatcher/logs_action';
 
+function names(name) {
+    switch (name) {
+        case PROTOCOL.TCP_HP:
+            return "TCP HP";
+        case PROTOCOL.UDP_HP:
+            return "UDP HP";
+        case PROTOCOL.DIRECT:
+            return "Direct";
+    }
+}
+
 const { CheckableTag } = Tag;
 
 class TagButton extends Component {
@@ -52,7 +63,7 @@ class TagButton extends Component {
     render() {
         const { name } = this.props
         return (
-            <CheckableTag  checked={this.state.checked} onChange={(c) => this.handleChange(c)}>{name}</CheckableTag>
+            <CheckableTag  checked={this.state.checked} onChange={(c) => this.handleChange(c)}>{names(name)}</CheckableTag>
         )
     }
 }

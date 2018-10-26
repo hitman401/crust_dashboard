@@ -36,15 +36,15 @@ class App extends Component {
   };
 
   componentDidMount() {
-    this.props.fetchLogs(0, 400);
+    this.props.fetchLogs(0, 500);
   }
 
   fetchNewLogs() {
       if (this.props.store.logs.length !== 0) {
-        this.props.fetchLogs(this.props.store.logs.length, 400);
+        this.props.fetchLogs(this.props.store.logs.length, 500);
       }
       else {
-        this.props.fetchLogs(0, 400);
+        this.props.fetchLogs(0, 500);
       }
   }
 
@@ -204,16 +204,16 @@ class App extends Component {
             <Content className="main-layout-content">
               <div className="main-progress" style={{ display: (!this.props.store.paging.completed || this.props.activity.isComputing) ? 'block' : 'none' }}>
                 {
-                  (this.props.store.paging.done <= 100) || this.props.activity.isComputing ? (
+                  ((this.props.store.isFetching) ? (
                     <Progress
-                      percent={this.props.activity.isComputing ? 100 : this.props.store.paging.done}
+                      percent={this.props.store.paging.done}
                       strokeLinecap="square"
                       strokeWidth="3px"
                       status="active"
                       showInfo={false}
                       strokeColor="#FA541C"
                     />
-                  ) : null
+                  ) : null)
                 }
               </div>
               <Route path="/" exact component={ConnectionAttempts} />

@@ -60,11 +60,11 @@ export class RenderPieChart extends Component {
     const percent = total === 0 ? 0 : Math.round(success / (total) * 100);
     const chartData = [
       {
-        type: "Successful\t\t" + success,
+        type: "Successful",
         value: success,
       },
       {
-        type: "Failed\t\t" + failed,
+        type: "Failed",
         value: failed,
       }
     ];

@@ -38,7 +38,19 @@ export default class PieCharts extends Component {
               fill: 'rgba(0, 0, 0, 0.65)'
             }}
             itemMarginBottom={16}
+            custom={true}
+            items={this.props.data.map((item) => {
+              return {
+                value: `${item.type}\t\t${item.value}`,
+                marker: {
+                  symbol: 'circle',
+                  radium: 5,
+                  fill: item.type === 'Successful' ? '#52C41A' : '#DADADA'
+                }
+              };
+            })}
           />
+
           <Guide>
             <Html
               position={["50%", "50%"]}

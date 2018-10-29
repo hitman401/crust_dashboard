@@ -85,9 +85,9 @@ const logReducer = (state = initialState, action) => {
                     failedConnections: preparedLogs.failedConnections,
                     osList: Object.values(OS),
                     natTypes: Object.values(NatType),
-                    osCount: preparedLogs.osCountMap,
-                    countriesCount: preparedLogs.countryCountMap,
-                    peerIds: preparedLogs.peerIdMap
+                    osCount: preparedLogs.osCount,
+                    countriesCount: preparedLogs.countriesCount,
+                    peerIds: preparedLogs.peerIds
                 };
                 state = {
                     ...initialState,

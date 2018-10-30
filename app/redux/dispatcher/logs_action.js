@@ -6,18 +6,24 @@ import CacheHandler from './CacheHandler';
 const worker = new Worker('./worker.js');
 const promiseWorker = new PromiseWorker(worker);
 
-const CACHE_NAME = 'dash-v1';
-const cache = new CacheHandler(CACHE_NAME);
-cache.clearOld();
+let cacheName;
+let cache;
 
-const fetchAllLogs = (dispatcher, from, limit, oldLogs=[]) => {
+const fetchAllLogs = async (dispatcher, from, limit, oldLogs=[]) => {
     let result = [];
-    const cachedTotal = window.localStorage.getItem(CACHE_NAME) || 0;
-    const fetchData = (from, limit, oldLogs, total) => {
+    if (!cache) {
+        const response = await fetch('/cacheConfig', {cache: 'no-cache'});
+        const cacheConfig = await response.json();
+        cache = new CacheHandler(cacheConfig.name);
+        cache.clearOld();
+        cacheName = cacheConfig.name;
+    }
+    const cachedTotal = window.localStorage.getItem(cacheName) || 0;
+    const fetchData = (from, limit, oldLogs, total=0) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const fromNetwork = (from !== 0 && !total) || 
-                    (total - result.length) < limit || (total === result.length);
+                    ((total - result.length) < limit) || (total === result.length);
                 const dataFetched = await cache.fetch(`/api/stats?offset=${from}&size=${limit}`, {
                     cache: fromNetwork ? 'reload' : 'default'
                 });
@@ -40,7 +46,7 @@ const fetchAllLogs = (dispatcher, from, limit, oldLogs=[]) => {
                     return resolve(oldLogs)
                 } else {
                     result = result.concat(oldLogs.logs);
-                    window.localStorage.setItem(CACHE_NAME, result.length);
+                    window.localStorage.setItem(cacheName, result.length);
                     const preparedLogs = await promiseWorker.postMessage({
                         type: 'PREPARE_LOGS',
                         payload: result                    
@@ -75,7 +81,7 @@ export const fetchLogs = (from, limit) => {
         dispatcher({
             type: Action.FETCH_LOGS,
             payload: fetchAllLogs(dispatcher, from, limit, getState().logReducer.filteredLogs)
-        })
+        });
     }
 }
 

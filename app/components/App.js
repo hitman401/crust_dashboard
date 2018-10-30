@@ -40,8 +40,9 @@ class App extends Component {
   }
 
   componentWillUpdate(nextProps, nextState) {
-    (this.state.collapsed!==nextState.collapsed)?
-    window.dispatchEvent(new Event('resize')): null;
+    if(this.state.collapsed!==nextState.collapsed) {
+      window.dispatchEvent(new Event('resize'));
+    }
   }
 
   fetchNewLogs() {

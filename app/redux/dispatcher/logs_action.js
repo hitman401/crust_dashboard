@@ -1,32 +1,43 @@
 import Action from '../ActionType';
 import PromiseWorker from 'promise-worker';
 
+import CacheHandler from './CacheHandler';
+
 const worker = new Worker('./worker.js');
 const promiseWorker = new PromiseWorker(worker);
 
-const PROGRESS_COMPLETED_TIMEOUT = 1000;
+const CACHE_NAME = 'dash-v1';
+const cache = new CacheHandler(CACHE_NAME);
+cache.clearOld();
 
 const fetchAllLogs = (dispatcher, from, limit, oldLogs=[]) => {
     let result = [];
-    const fetchData = (from, limit, oldLogs) => {
+    const cachedTotal = window.localStorage.getItem(CACHE_NAME) || 0;
+    const fetchData = (from, limit, oldLogs, total) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const dataFetched = await fetch(`/api/stats?offset=${from}&size=${limit}`);
+                const fromNetwork = (from !== 0 && !total) || 
+                    (total - result.length) < limit || (total === result.length);
+                const dataFetched = await cache.fetch(`/api/stats?offset=${from}&size=${limit}`, {
+                    cache: fromNetwork ? 'reload' : 'default'
+                });
                 const jsonData = await dataFetched.json();
                 const fetchedLogs = jsonData.logs;
                 result = fetchedLogs.reverse().concat(result);
                 const fetchedLength = result.length + oldLogs.length;
-                const donePercentage = Math.ceil(fetchedLength / (jsonData.total) * 100);
+                const maxSize = (cachedTotal > jsonData.total ? cachedTotal : jsonData.total);
+                const donePercentage = Math.ceil((fetchedLength / maxSize) * 100);
                 dispatcher({
                     type: Action.UPDATE_PROGRESS,
                     payload: {
                         done: donePercentage
                     }
                 });
-                if (fetchedLength !== jsonData.total) {
-                    return resolve(await fetchData(fetchedLength, limit, oldLogs));
+                if (fetchedLength !== maxSize) {
+                    return resolve(await fetchData(fetchedLength, limit, oldLogs, maxSize));
                 }
-                result = result.concat(oldLogs)
+                result = result.concat(oldLogs);
+                window.localStorage.setItem(CACHE_NAME, result.length);
                 const preparedLogs = await promiseWorker.postMessage({
                     type: 'PREPARE_LOGS',
                     payload: result

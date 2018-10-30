@@ -15,7 +15,7 @@ const fetchAllLogs = (dispatcher, from, limit, oldLogs=[]) => {
                 const jsonData = await dataFetched.json();
                 const fetchedLogs = jsonData.logs;
                 result = fetchedLogs.reverse().concat(result);
-                const fetchedLength = result.length + oldLogs.length;
+                const fetchedLength = result.length + oldLogs.logs.length;
                 const donePercentage = Math.ceil(fetchedLength / (jsonData.total) * 100);
                 dispatcher({
                     type: Action.UPDATE_PROGRESS,
@@ -26,12 +26,17 @@ const fetchAllLogs = (dispatcher, from, limit, oldLogs=[]) => {
                 if (fetchedLength !== jsonData.total) {
                     return resolve(await fetchData(fetchedLength, limit, oldLogs));
                 }
-                result = result.concat(oldLogs)
-                const preparedLogs = await promiseWorker.postMessage({
-                    type: 'PREPARE_LOGS',
-                    payload: result
-                });
-                return resolve(preparedLogs);
+                if (result.length === 0) {
+                    return resolve(oldLogs)
+                } 
+                else {
+                    result = result.concat(oldLogs.logs);
+                    const preparedLogs = await promiseWorker.postMessage({
+                        type: 'PREPARE_LOGS',
+                        payload: result                    
+                    });
+                    return resolve(preparedLogs);
+                }
             } catch (err) {
                 return reject(err);
             }
@@ -59,7 +64,7 @@ export const fetchLogs = (from, limit) => {
     return (dispatcher, getState) => {
         dispatcher({
             type: Action.FETCH_LOGS,
-            payload: fetchAllLogs(dispatcher, from, limit, getState().logReducer.logs)
+            payload: fetchAllLogs(dispatcher, from, limit, getState().logReducer.filteredLogs)
         })
     }
 }

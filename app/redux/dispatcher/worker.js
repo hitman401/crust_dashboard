@@ -89,14 +89,17 @@ const customWorker = (msg) => {
             }
             (isSuccess ? successfulConnections : failedConnections).push(log);
         });
+        const osCount = osCountMap;
+        const countriesCount = countryCountMap;
+        const peerIds = peerIdMap;
         return {
             logs,
             tcpHpCount,
             udpHpCount,
             directCount,
-            osCountMap,
-            countryCountMap,
-            peerIdMap,
+            osCount,
+            countriesCount,
+            peerIds,
             successfulConnections,
             failedConnections,
             dateRange: {

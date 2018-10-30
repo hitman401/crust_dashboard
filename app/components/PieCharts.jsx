@@ -8,7 +8,6 @@ export default class PieCharts extends Component {
   constructor() {
     super();
     this.state = {
-      //type: this.props.title,
       type: '',
       percent: 100
     }
@@ -24,7 +23,6 @@ export default class PieCharts extends Component {
     return (
       <Col className="pie-chart-1">
         <Chart
-          width={400}
           height={350}
           padding="auto"
           data={this.props.data}

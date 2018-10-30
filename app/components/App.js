@@ -39,6 +39,12 @@ class App extends Component {
     this.props.fetchLogs(0, 500);
   }
 
+  componentWillUpdate(nextProps, nextState) {
+    if(this.state.collapsed!==nextState.collapsed) {
+      window.dispatchEvent(new Event('resize'));
+    }
+  }
+
   fetchNewLogs() {
       if (this.props.store.logs.length !== 0) {
         this.props.fetchLogs(this.props.store.logs.length, 500);

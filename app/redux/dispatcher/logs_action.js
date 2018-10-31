@@ -42,9 +42,9 @@ const fetchAllLogs = async (dispatcher, from, limit, oldLogs=[], filter) => {
                 if (fetchedLength !== maxSize) {
                     return resolve(await fetchData(fetchedLength, limit, oldLogs, maxSize));
                 }
-                if (result.length === 0) {
-                    return resolve(oldLogs)
-                } else {
+                // if (result.length === 0) {
+                //     return resolve(oldLogs)
+                // } else {
                     result = result.concat(oldLogs.logs);
                     window.localStorage.setItem(cacheName, result.length);
                     const preparedLogs = await promiseWorker.postMessage({
@@ -55,7 +55,7 @@ const fetchAllLogs = async (dispatcher, from, limit, oldLogs=[], filter) => {
                         }                    
                     });
                     return resolve(preparedLogs);
-                }
+                // }
             } catch (err) {
                 return reject(err);
             }

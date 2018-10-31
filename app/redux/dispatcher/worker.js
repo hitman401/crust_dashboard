@@ -140,13 +140,12 @@ const customWorker = (msg) => {
                 log.is_direct_successful? activityTab.directCount++ : null;
                 (log.isSuccessful ? activityTab.successfulConnections : activityTab.failedConnections).push(log);
                 activityTab.logs.push(log);
-            }
-    
-            if (!peerIdMap.includes(requesterPeerId)) {
-                peerIdMap.push(requesterPeerId);
-            }
-            if (!peerIdMap.includes(responderPeerId)) {
-                peerIdMap.push(responderPeerId)
+                if (!peerIdMap.includes(requesterPeerId)) {
+                    peerIdMap.push(requesterPeerId);
+                }
+                if (!peerIdMap.includes(responderPeerId)) {
+                    peerIdMap.push(responderPeerId)
+                }
             }
     
             log.peer_requester.os = tranformOSName(log.peer_requester.os);

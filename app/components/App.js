@@ -40,8 +40,11 @@ class App extends Component {
   }
 
   componentWillUpdate(nextProps, nextState) {
-    if(this.state.collapsed!==nextState.collapsed) {
+    if (this.state.collapsed!==nextState.collapsed) {
       window.dispatchEvent(new Event('resize'));
+    }
+    if (this.props.activity.isComputing && !nextProps.activity.isComputing) {
+      this.props.progressCompleted();
     }
   }
 

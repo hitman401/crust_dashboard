@@ -51,6 +51,12 @@ const fetchAllLogs = async (dispatcher, from, limit, oldLogs=[]) => {
                         type: 'PREPARE_LOGS',
                         payload: result                    
                     });
+                    dispatcher({
+                        type: Action.UPDATE_PROGRESS,
+                        payload: {
+                            done: donePercentage + 15
+                        }
+                    });
                     return resolve(preparedLogs);
                 }
             } catch (err) {
@@ -62,9 +68,6 @@ const fetchAllLogs = async (dispatcher, from, limit, oldLogs=[]) => {
     return new Promise(async (resolve, reject) => {
         try {
             const logs = await fetchData(from, limit, oldLogs);
-            dispatcher({
-                type: Action.PROGRESS_COMPLETED
-            });
             return resolve({logs});
         } catch (e) {
             dispatcher({
@@ -117,6 +120,12 @@ export const filterChange = (mod, action, value) => {
         payload: value
     }
 }
+
+export const progressCompleted = () => {
+    return {
+        type: Action.PROGRESS_COMPLETED
+    };
+};
 
 // export const filterByConnectionResult = (action) => {
 //     return {

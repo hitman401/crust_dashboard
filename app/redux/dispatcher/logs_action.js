@@ -9,7 +9,7 @@ const promiseWorker = new PromiseWorker(worker);
 let cacheName;
 let cache;
 
-const fetchAllLogs = async (dispatcher, from, limit, oldLogs=[]) => {
+const fetchAllLogs = async (dispatcher, from, limit, oldLogs=[], filter) => {
     let result = [];
     if (!cache) {
         const response = await fetch('/cacheConfig', {cache: 'no-cache'});
@@ -49,7 +49,10 @@ const fetchAllLogs = async (dispatcher, from, limit, oldLogs=[]) => {
                     window.localStorage.setItem(cacheName, result.length);
                     const preparedLogs = await promiseWorker.postMessage({
                         type: 'PREPARE_LOGS',
-                        payload: result                    
+                        payload: {
+                            logs: result,
+                            filter: filter
+                        }                    
                     });
                     return resolve(preparedLogs);
                 }
@@ -65,7 +68,7 @@ const fetchAllLogs = async (dispatcher, from, limit, oldLogs=[]) => {
             dispatcher({
                 type: Action.PROGRESS_COMPLETED
             });
-            return resolve({logs});
+            return resolve(logs);
         } catch (e) {
             dispatcher({
                 type: Action.ERROR,
@@ -80,7 +83,8 @@ export const fetchLogs = (from, limit) => {
     return (dispatcher, getState) => {
         dispatcher({
             type: Action.FETCH_LOGS,
-            payload: fetchAllLogs(dispatcher, from, limit, getState().logReducer.filteredLogs)
+            payload: fetchAllLogs(dispatcher, from, limit, getState().logReducer.filteredLogs, 
+                getState().connectionAttemptActivity.filter)
         });
     }
 }

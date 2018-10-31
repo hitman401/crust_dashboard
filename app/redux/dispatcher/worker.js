@@ -37,7 +37,68 @@ const customWorker = (msg) => {
         return name + '(' + id + ')'
     };
 
-    const prepareLogs = (logs) => {
+
+    const isNatTypeMatching = (log, filter) => {
+        let matches = false;
+        if (filter.NatType1 === NatType.ANY && filter.NatType2 === NatType.ANY) {
+            matches = true;
+        } else if ((filter.NatType1 === NatType.ANY && filter.NatType2 !== NatType.ANY)) {
+            matches = (filter.NatType2 === log.peer_requester.nat_type || filter.NatType2 === log.peer_responder.nat_type)
+        } else if (filter.NatType2 === NatType.ANY && filter.NatType1 !== NatType.ANY) {
+            matches = (filter.NatType1 === log.peer_requester.nat_type || filter.NatType1 === log.peer_responder.nat_type)
+        } else if (filter.NatType1 !== NatType.ANY && filter.NatType2 !== NatType.ANY) {
+            matches = (log.peer_requester.nat_type === filter.NatType1 && log.peer_responder.nat_type === filter.NatType2) ||
+                (log.peer_requester.nat_type === filter.NatType2 && log.peer_responder.nat_type === filter.NatType1)
+        }
+        return matches;
+    }
+
+    const isOSMatching = (log, filter) => {
+        let matches = false;
+        if (filter.OSType1 === OS.ANY && filter.OSType2 === OS.ANY)
+            matches = true;
+        else if ((filter.OSType1 === OS.ANY && filter.OSType2 !== OS.ANY))
+            matches = (filter.OSType2 === log.peer_requester.os || filter.OSType2 === log.peer_responder.os)
+        else if ((filter.OSType2 === OS.ANY && filter.OSType1 !== OS.ANY))
+            matches = (filter.OSType1 === log.peer_requester.os || filter.OSType1 === log.peer_responder.os)
+        else if (filter.OSType1 !== OS.ANY && filter.OSType2 !== OS.ANY)
+            matches = (log.peer_requester.os === filter.OSType1 && log.peer_responder.os === filter.OSType2) ||
+                (log.peer_requester.os === filter.OSType2 && log.peer_responder.os === filter.OSType1)
+        return matches;
+    }
+
+    // const isProtocolMatching = (log) => {
+    //     const { tcpHp, udpHp, direct } = filter.Protocol;
+    //     if (tcpHp && udpHp && direct) {
+    //         return true;
+    //     }
+    //     return (direct && log.is_direct_successful) ||
+    //         (tcpHp && log.tcp_hole_punch_result === 'Succeeded') ||
+    //         (udpHp && log.udp_hole_punch_result === 'Succeeded');
+    // }
+
+    const isCountryMatching = (log, filter) => {
+        const ANY = OS.ANY;
+        if (filter.CountryType1 === ANY && filter.CountryType2 === ANY)
+            return true;
+        else if ((filter.CountryType1 === ANY && filter.CountryType2 !== ANY))
+            return (filter.CountryType2 === log.peer_requester.geo_info.country_name || filter.CountryType2 === log.peer_responder.geo_info.country_name)
+        else if ((filter.CountryType2 === ANY && filter.CountryType1 !== ANY))
+            return (filter.CountryType1 === log.peer_requester.geo_info.country_name || filter.CountryType1 === log.peer_responder.geo_info.country_name)
+        else if (filter.CountryType1 !== ANY && filter.CountryType2 !== ANY)
+            return (log.peer_requester.geo_info.country_name === filter.CountryType1 && log.peer_responder.geo_info.country_name === filter.CountryType2) ||
+                (log.peer_requester.geo_info.country_name === filter.CountryType2 && log.peer_responder.geo_info.country_name === filter.CountryType1)
+    }
+
+    const isPeerIncluded = (arr, requesterPeerId, responderPeerId) => {
+        return arr.length === 0 ? true : (arr.indexOf(requesterPeerId) > -1 || arr.indexOf(responderPeerId) > -1);
+    }
+
+    const isPeerExcluded = (arr, requesterPeerId, responderPeerId) => {
+        return arr.length === 0 ? false : (arr.indexOf(requesterPeerId) > -1 || arr.indexOf(responderPeerId) > -1);
+    }
+
+    const prepareLogs = (logs, filter) => {
         const osCountMap = {};
         const countryCountMap = {};
         const peerIdMap = [];
@@ -47,18 +108,40 @@ const customWorker = (msg) => {
         let udpHpCount=0;
         let directCount=0;
         let from = new Date;
+        const activityTab = {
+            logs: [],
+            tcpHpCount: 0,
+            udpHpCount: 0,
+            directCount: 0,
+            successfulConnections: [],
+            failedConnections: []
+        }
     
         logs.forEach((log, i) => {
             log.index = log.hasOwnProperty("index") ? log.index : logs.length - i;
+            const requesterPeerId = generatePeerPublicInfo(log.peer_requester.name, log.peer_requester.id);
+            const responderPeerId = generatePeerPublicInfo(log.peer_responder.name, log.peer_responder.id);
+            const isFilteredPassed = isNatTypeMatching(log, filter) 
+                && isOSMatching(log, filter) 
+                // && isProtocolMatching(log) 
+                && isCountryMatching(log, filter)
+                && isPeerIncluded(filter.IncludePeerId, requesterPeerId, responderPeerId)
+                && !isPeerExcluded(filter.ExcludePeerId, requesterPeerId, responderPeerId);
             log.tcp_hole_punch_result === 'Succeeded' ? tcpHpCount++ : null;
             log.udp_hole_punch_result === 'Succeeded' ? udpHpCount++ : null;
             log.is_direct_successful? directCount++ : null;
 
             const isSuccess = log.udp_hole_punch_result === 'Succeeded' || log.tcp_hole_punch_result === 'Succeeded' || log.is_direct_successful;
             log.isSuccessful = isSuccess;
+
+            if (isFilteredPassed) {
+                log.tcp_hole_punch_result === 'Succeeded' ? activityTab.tcpHpCount++ : null;
+                log.udp_hole_punch_result === 'Succeeded' ? activityTab.udpHpCount++ : null;
+                log.is_direct_successful? activityTab.directCount++ : null;
+                (log.isSuccessful ? activityTab.successfulConnections : activityTab.failedConnections).push(log);
+                activityTab.logs.push(log);
+            }
     
-            const requesterPeerId = generatePeerPublicInfo(log.peer_requester.name, log.peer_requester.id);
-            const responderPeerId = generatePeerPublicInfo(log.peer_responder.name, log.peer_responder.id);
             if (!peerIdMap.includes(requesterPeerId)) {
                 peerIdMap.push(requesterPeerId);
             }
@@ -105,82 +188,9 @@ const customWorker = (msg) => {
             dateRange: {
                 from,
                 to: new Date
-            }
+            },
+            activityTab
         };
-    };
-
-    const applyFilter = (logs, filter) => {
-        const isNatTypeMatching = (log) => {
-            let matches = false;
-            if (filter.NatType1 === NatType.ANY && filter.NatType2 === NatType.ANY) {
-                matches = true;
-            } else if ((filter.NatType1 === NatType.ANY && filter.NatType2 !== NatType.ANY)) {
-                matches = (filter.NatType2 === log.peer_requester.nat_type || filter.NatType2 === log.peer_responder.nat_type)
-            } else if (filter.NatType2 === NatType.ANY && filter.NatType1 !== NatType.ANY) {
-                matches = (filter.NatType1 === log.peer_requester.nat_type || filter.NatType1 === log.peer_responder.nat_type)
-            } else if (filter.NatType1 !== NatType.ANY && filter.NatType2 !== NatType.ANY) {
-                matches = (log.peer_requester.nat_type === filter.NatType1 && log.peer_responder.nat_type === filter.NatType2) ||
-                    (log.peer_requester.nat_type === filter.NatType2 && log.peer_responder.nat_type === filter.NatType1)
-            }
-            return matches;
-        }
-    
-        const isOSMatching = (log) => {
-            let matches = false;
-            if (filter.OSType1 === OS.ANY && filter.OSType2 === OS.ANY)
-                matches = true;
-            else if ((filter.OSType1 === OS.ANY && filter.OSType2 !== OS.ANY))
-                matches = (filter.OSType2 === log.peer_requester.os || filter.OSType2 === log.peer_responder.os)
-            else if ((filter.OSType2 === OS.ANY && filter.OSType1 !== OS.ANY))
-                matches = (filter.OSType1 === log.peer_requester.os || filter.OSType1 === log.peer_responder.os)
-            else if (filter.OSType1 !== OS.ANY && filter.OSType2 !== OS.ANY)
-                matches = (log.peer_requester.os === filter.OSType1 && log.peer_responder.os === filter.OSType2) ||
-                    (log.peer_requester.os === filter.OSType2 && log.peer_responder.os === filter.OSType1)
-            return matches;
-        }
-    
-        // const isProtocolMatching = (log) => {
-        //     const { tcpHp, udpHp, direct } = filter.Protocol;
-        //     if (tcpHp && udpHp && direct) {
-        //         return true;
-        //     }
-        //     return (direct && log.is_direct_successful) ||
-        //         (tcpHp && log.tcp_hole_punch_result === 'Succeeded') ||
-        //         (udpHp && log.udp_hole_punch_result === 'Succeeded');
-        // }
-    
-        const isCountryMatching = (log) => {
-            const ANY = OS.ANY;
-            if (filter.CountryType1 === ANY && filter.CountryType2 === ANY)
-                return true;
-            else if ((filter.CountryType1 === ANY && filter.CountryType2 !== ANY))
-                return (filter.CountryType2 === log.peer_requester.geo_info.country_name || filter.CountryType2 === log.peer_responder.geo_info.country_name)
-            else if ((filter.CountryType2 === ANY && filter.CountryType1 !== ANY))
-                return (filter.CountryType1 === log.peer_requester.geo_info.country_name || filter.CountryType1 === log.peer_responder.geo_info.country_name)
-            else if (filter.CountryType1 !== ANY && filter.CountryType2 !== ANY)
-                return (log.peer_requester.geo_info.country_name === filter.CountryType1 && log.peer_responder.geo_info.country_name === filter.CountryType2) ||
-                    (log.peer_requester.geo_info.country_name === filter.CountryType2 && log.peer_responder.geo_info.country_name === filter.CountryType1)
-        }
-    
-        const isPeerIncluded = (arr, requesterPeerId, responderPeerId) => {
-            return arr.length === 0 ? true : (arr.indexOf(requesterPeerId) > -1 || arr.indexOf(responderPeerId) > -1);
-        }
-
-        const isPeerExcluded = (arr, requesterPeerId, responderPeerId) => {
-            return arr.length === 0 ? false : (arr.indexOf(requesterPeerId) > -1 || arr.indexOf(responderPeerId) > -1);
-        }
-
-        return logs.filter(log => {
-            const requesterPeerId = generatePeerPublicInfo(log.peer_requester.name, log.peer_requester.id);
-            const responderPeerId = generatePeerPublicInfo(log.peer_responder.name, log.peer_responder.id);
-            
-            return isNatTypeMatching(log) 
-                && isOSMatching(log) 
-                // && isProtocolMatching(log) 
-                && isCountryMatching(log)
-                && isPeerIncluded(filter.IncludePeerId, requesterPeerId, responderPeerId)
-                && !isPeerExcluded(filter.ExcludePeerId, requesterPeerId, responderPeerId);
-        });
     };
 
     const filterPieData = (logs, filter) => {
@@ -207,11 +217,8 @@ const customWorker = (msg) => {
     const {type, payload} = msg;
     switch(type) {
         case 'PREPARE_LOGS':
-            return prepareLogs(payload);
-
         case 'REVALIDATE':
-            const filteredLogs = applyFilter(payload.logs, payload.filter);
-            return prepareLogs(filteredLogs);
+            return prepareLogs(payload.logs, payload.filter);
         
         case 'FILTER_PIE_CHART':
             return filterPieData(payload.logs, payload.filter);

@@ -78,7 +78,7 @@ const logReducer = (state = initialState, action) => {
                     error: action.payload,
                 };
             } else {
-                const preparedLogs = action.payload.logs;
+                const preparedLogs = action.payload;
                 const filteredLogs = {
                     logs: preparedLogs.logs,
                     successfulConnections: preparedLogs.successfulConnections,

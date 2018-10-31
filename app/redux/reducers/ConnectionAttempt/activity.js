@@ -21,6 +21,39 @@ const initialState = {
 const activityReducer = (state = initialState, action) => {
     let filter;
     switch (action.type) {
+        case `${Action.FETCH_LOGS}_PENDING`:
+            state = {
+                ...state,
+                isComputing: true,
+                filteredLogs: [],
+                pieChart: {
+                    total: 0,
+                    success: 0,
+                    isComputing: true
+                }
+            };
+            break;
+        
+        case `${Action.REVALIDATE}_FULFILLED`:
+        case `${Action.FETCH_LOGS}_FULFILLED`:
+            console.log(action.payload);
+            const activityTab = action.payload.activityTab;
+            state = {
+                ...state,
+                isComputing: false,
+                filteredLogs: activityTab.logs,
+                tcpHpCount: activityTab.tcpHpCount,
+                udpHpCount: activityTab.udpHpCount,
+                directCount: activityTab.directCount,
+                successfulConnections: activityTab.successfulConnections,
+                failedConnections: activityTab.failedConnections,
+                pieChart: {
+                    total: activityTab.logs.length,
+                    success: activityTab.successfulConnections.length,
+                    isComputing: false
+                }
+            };
+            break;
         case `${Action.REVALIDATE}_PENDING`:
             state = {
                 ...state,
@@ -33,23 +66,23 @@ const activityReducer = (state = initialState, action) => {
                 }
             };
             break;
-        case `${Action.REVALIDATE}_FULFILLED`:
-            state = {
-                ...state,
-                isComputing: false,
-                filteredLogs: action.payload.logs,
-                tcpHpCount: action.payload.tcpHpCount,
-                udpHpCount: action.payload.udpHpCount,
-                directCount: action.payload.directCount,
-                successfulConnections: action.payload.successfulConnections,
-                failedConnections: action.payload.failedConnections,
-                pieChart: {
-                    total: action.payload.logs.length,
-                    success: action.payload.successfulConnections.length,
-                    isComputing: false
-                }
-            };
-            break;
+        // case `${Action.REVALIDATE}_FULFILLED`:
+        //     state = {
+        //         ...state,
+        //         isComputing: false,
+        //         filteredLogs: action.payload.logs,
+        //         tcpHpCount: action.payload.tcpHpCount,
+        //         udpHpCount: action.payload.udpHpCount,
+        //         directCount: action.payload.directCount,
+        //         successfulConnections: action.payload.successfulConnections,
+        //         failedConnections: action.payload.failedConnections,
+        //         pieChart: {
+        //             total: action.payload.logs.length,
+        //             success: action.payload.successfulConnections.length,
+        //             isComputing: false
+        //         }
+        //     };
+        //     break;
 
         case `${MOD_NAME}_${Action.FILTER_NAT_TYPE1}`:
             filter = {

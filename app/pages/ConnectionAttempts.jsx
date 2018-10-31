@@ -22,14 +22,14 @@ class ConnectionAttempts extends Component {
 
   componentWillUpdate(nextProps) {
     const hasFilterChanged = !isEquivalent(this.props.activity.filter, nextProps.activity.filter, ['Protocol']);
-    const hasNewLogs = !isEquivalent(this.props.store.filteredConnectionResults, nextProps.store.filteredConnectionResults)
+    // const hasNewLogs = !isEquivalent(this.props.store.filteredConnectionResults, nextProps.store.filteredConnectionResults)
     if (hasFilterChanged) {
       this.props.revalidate(this.props.store.filteredConnectionResults, nextProps.activity.filter);
     }
 
-    if (hasNewLogs) {
-      this.props.revalidate(nextProps.store.filteredConnectionResults, this.props.activity.filter);
-    }
+    // if (hasNewLogs) {
+    //   this.props.revalidate(nextProps.store.filteredConnectionResults, this.props.activity.filter);
+    // }
   }
 
   render() {

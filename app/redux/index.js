@@ -1,4 +1,4 @@
-// import logger from 'redux-logger';
+import logger from 'redux-logger';
 import thunk from 'redux-thunk';
 import promiseMiddleware from 'redux-promise-middleware';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
@@ -13,7 +13,7 @@ const store = createStore(combineReducers({
     connectionAttemptActivity,
     // connectionAttemptCountry,
     // connectionAttemptOS
-}), applyMiddleware(thunk, promiseMiddleware()));
+}), applyMiddleware(logger, thunk, promiseMiddleware()));
 
 // window.store = store;
 

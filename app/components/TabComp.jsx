@@ -57,7 +57,18 @@ export class RenderPieChart extends Component {
     const total = data.total;
     const success = data.success;
     const failed = data.total - data.success;
-    const percent = total === 0 ? 0 : Math.round(success / (total) * 100);
+    let percent = 0;
+    
+    if (total === 0) {
+      percent = 0;
+    }
+    else if (((success / total) * 100) > 0 && ((success / total) * 100) < 1) {
+      percent = "<" + 1;
+    }
+    else {
+      percent = Math.round(success / (total) * 100)
+    }
+
     const chartData = [
       {
         type: "Successful",

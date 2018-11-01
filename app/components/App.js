@@ -204,6 +204,7 @@ class App extends Component {
                   type="primary"
                   icon="reload"
                   onClick={() => this.fetchNewLogs()}
+                  disabled={this.props.activity.isComputing}
                 >Refresh Data</Button>
               </div>
             </Header>

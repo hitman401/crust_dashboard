@@ -33,8 +33,8 @@ export const Filter = {
     IncludePeerId: [],
     ExcludePeerId: [],
     Protocol:{
-        tcpHp:true,
-        udpHp:true,
-        direct:true 
+        tcpHp: true,
+        udpHp: true,
+        direct: true 
     }
 }

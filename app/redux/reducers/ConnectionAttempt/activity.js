@@ -51,6 +51,14 @@ const activityReducer = (state = initialState, action) => {
                     total: activityTab.logs.length,
                     success: activityTab.successfulConnections.length,
                     isComputing: false
+                },
+                filter: {
+                    ...state.filter,
+                    Protocol: {
+                        tcpHp: true,
+                        udpHp: true,
+                        direct: true
+                    }
                 }
             };
             break;

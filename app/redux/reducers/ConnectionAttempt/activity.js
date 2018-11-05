@@ -49,7 +49,7 @@ const activityReducer = (state = initialState, action) => {
                 failedConnections: activityTab.failedConnections,
                 pieChart: {
                     total: activityTab.logs.length,
-                    success: activityTab.successfulConnections.length,
+                    success: activityTab.pieChartSuccessCount,
                     isComputing: false
                 }
             };

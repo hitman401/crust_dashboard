@@ -1,5 +1,5 @@
 import Register from 'promise-worker/register';
-const customWorker = (msg) => {    
+const customWorker = (msg) => {
     const NatType = {
         ANY: 'Any',
         EDM: 'EDM',
@@ -37,6 +37,12 @@ const customWorker = (msg) => {
         return name + '(' + id + ')'
     };
 
+    const filterPieLogic = (log, filter) => {
+        const tcpResult = filter.tcpHp ? log.tcp_hole_punch_result === 'Succeeded' : false;
+        const udpResult = filter.udpHp ? log.udp_hole_punch_result === 'Succeeded' : false;
+        const directResult = filter.direct ? log.is_direct_successful : false;
+        return (tcpResult || udpResult || directResult) 
+    }
 
     const isNatTypeMatching = (log, filter) => {
         let matches = false;
@@ -104,50 +110,55 @@ const customWorker = (msg) => {
         const peerIdMap = [];
         const successfulConnections = [];
         const failedConnections = [];
-        let tcpHpCount=0;
-        let udpHpCount=0;
-        let directCount=0;
+        let tcpHpCount = 0;
+        let udpHpCount = 0;
+        let directCount = 0;
         let from = new Date;
         const activityTab = {
             logs: [],
             tcpHpCount: 0,
             udpHpCount: 0,
             directCount: 0,
+            pieChartSuccessCount: 0,
             successfulConnections: [],
             failedConnections: []
         }
-    
+
         logs.forEach((log, i) => {
             log.index = log.hasOwnProperty("index") ? log.index : logs.length - i;
             const requesterPeerId = generatePeerPublicInfo(log.peer_requester.name, log.peer_requester.id);
             const responderPeerId = generatePeerPublicInfo(log.peer_responder.name, log.peer_responder.id);
-            const isFilteredPassed = isNatTypeMatching(log, filter) 
-                && isOSMatching(log, filter) 
+            const isFilteredPassed = isNatTypeMatching(log, filter)
+                && isOSMatching(log, filter)
                 // && isProtocolMatching(log) 
                 && isCountryMatching(log, filter)
                 && isPeerIncluded(filter.IncludePeerId, requesterPeerId, responderPeerId)
                 && !isPeerExcluded(filter.ExcludePeerId, requesterPeerId, responderPeerId);
             log.tcp_hole_punch_result === 'Succeeded' ? tcpHpCount++ : null;
             log.udp_hole_punch_result === 'Succeeded' ? udpHpCount++ : null;
-            log.is_direct_successful? directCount++ : null;
+            log.is_direct_successful ? directCount++ : null;
 
             const isSuccess = log.udp_hole_punch_result === 'Succeeded' || log.tcp_hole_punch_result === 'Succeeded' || log.is_direct_successful;
             log.isSuccessful = isSuccess;
 
+            if (!peerIdMap.includes(requesterPeerId)) {
+                peerIdMap.push(requesterPeerId);
+            }
+            if (!peerIdMap.includes(responderPeerId)) {
+                peerIdMap.push(responderPeerId)
+            }
+
             if (isFilteredPassed) {
                 log.tcp_hole_punch_result === 'Succeeded' ? activityTab.tcpHpCount++ : null;
                 log.udp_hole_punch_result === 'Succeeded' ? activityTab.udpHpCount++ : null;
-                log.is_direct_successful? activityTab.directCount++ : null;
+                log.is_direct_successful ? activityTab.directCount++ : null;
                 (log.isSuccessful ? activityTab.successfulConnections : activityTab.failedConnections).push(log);
                 activityTab.logs.push(log);
-                if (!peerIdMap.includes(requesterPeerId)) {
-                    peerIdMap.push(requesterPeerId);
-                }
-                if (!peerIdMap.includes(responderPeerId)) {
-                    peerIdMap.push(responderPeerId)
-                }
+                if (filterPieLogic(log, filter.Protocol)) {
+                    activityTab.pieChartSuccessCount++;    
+                }                    
             }
-    
+
             log.peer_requester.os = tranformOSName(log.peer_requester.os);
             log.peer_responder.os = tranformOSName(log.peer_responder.os);
             if (!osCountMap[log.peer_requester.os]) {
@@ -193,39 +204,29 @@ const customWorker = (msg) => {
     };
 
     const filterPieData = (logs, filter) => {
-        let total = 0
-        let success = 0
-        logs.filter(log => {
-            total++;
-            const tcpResult = filter.tcpHp ? log.tcp_hole_punch_result === 'Succeeded' : false;
-            const udpResult = filter.udpHp ? log.udp_hole_punch_result === 'Succeeded' : false;
-            const directResult = filter.direct ? log.is_direct_successful : false;
-            if (tcpResult || udpResult || directResult) {
-                success++;
-            }
-        })
+        let success = logs.filter(log => filterPieLogic(log, filter));
         return {
             data: {
-                total,
-                success
+                total: logs.length,
+                success: success.length
             },
             filter
         };
     }
 
-    const {type, payload} = msg;
-    switch(type) {
+    const { type, payload } = msg;
+    switch (type) {
         case 'PREPARE_LOGS':
         case 'REVALIDATE':
             return prepareLogs(payload.logs, payload.filter);
-        
+
         case 'FILTER_PIE_CHART':
             return filterPieData(payload.logs, payload.filter);
-        
+
         case 'FILTER_NAME':
-            return payload.data.filter(item => item.search(new RegExp(payload.search,"i")) !== -1)
+            return payload.data.filter(item => item.search(new RegExp(payload.search, "i")) !== -1)
         default:
-        return;
+            return;
     }
 };
 
